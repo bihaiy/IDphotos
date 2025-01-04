@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.py[cod]
+*$py.class
+.env
+venv/
+.vscode/
+*.log
+.DS_Store 
+hivision/creator/retinaface/weights/
+hivision/creator/weights/

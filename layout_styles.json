@@ -1,0 +1,95 @@
+{
+    "1寸9张": {
+        "name": "1寸9张",
+        "paper_size": "4R（102x152mm）",
+        "orientation": "portrait",
+        "margins": {
+            "top": 5.0,
+            "bottom": 5.0,
+            "left": 5.0,
+            "right": 5.0
+        },
+        "photos": [
+            {
+                "photo_size": "一寸 (25×35mm)",
+                "layout_type": "horizontal",
+                "count": 3
+            },
+            {
+                "photo_size": "一寸 (25×35mm)",
+                "layout_type": "horizontal",
+                "count": 3
+            },
+            {
+                "photo_size": "一寸 (25×35mm)",
+                "layout_type": "horizontal",
+                "count": 3
+            }
+        ],
+        "spacing": 2.0,
+        "show_gridlines": false,
+        "show_divider": true
+    },
+    "2寸8张": {
+        "name": "2寸8张",
+        "paper_size": "4R（102x152mm）",
+        "orientation": "landscape",
+        "margins": {
+            "top": 1.0,
+            "bottom": 1.0,
+            "left": 3.0,
+            "right": 3.0
+        },
+        "photos": [
+            {
+                "photo_size": "二寸 (35×49mm)",
+                "layout_type": "horizontal",
+                "count": 4
+            },
+            {
+                "photo_size": "二寸 (35×49mm)",
+                "layout_type": "horizontal",
+                "count": 2
+            },
+            {
+                "photo_size": "二寸 (35×49mm)",
+                "layout_type": "horizontal",
+                "count": 2
+            }
+        ],
+        "spacing": 1.0,
+        "show_gridlines": false,
+        "show_divider": true
+    },
+    "1寸5张2寸4张混排": {
+        "name": "1寸5张2寸4张混排",
+        "paper_size": "4R（102x152mm）",
+        "orientation": "landscape",
+        "margins": {
+            "top": 5.0,
+            "bottom": 5.0,
+            "left": 4.0,
+            "right": 4.0
+        },
+        "photos": [
+            {
+                "photo_size": "一寸 (25×35mm)",
+                "layout_type": "horizontal",
+                "count": 5
+            },
+            {
+                "photo_size": "二寸 (35×49mm)",
+                "layout_type": "horizontal",
+                "count": 2
+            },
+            {
+                "photo_size": "二寸 (35×49mm)",
+                "layout_type": "horizontal",
+                "count": 2
+            }
+        ],
+        "spacing": 1.0,
+        "show_gridlines": false,
+        "show_divider": true
+    }
+}
