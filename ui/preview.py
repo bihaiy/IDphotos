@@ -380,7 +380,7 @@ class PreviewManager:
                 text="✎",
                 width=3,
                 style='IconUpload.TButton',
-                command=self.edit_selected_photo
+                command=lambda: self.edit_selected_photo(is_upload=False)
             )
             edit_btn.pack(side=tk.LEFT, padx=2)
             
@@ -397,6 +397,35 @@ class PreviewManager:
                 command=lambda: self.download_preview(frame)
             )
             download_btn.pack(side=tk.LEFT, padx=2)
+            
+            # 关闭按钮
+            close_btn = ttk.Button(
+                right_btn_frame,
+                text="×",
+                width=3,
+                style='Tool.TButton',
+                command=lambda: self.close_preview(frame, is_upload)
+            )
+            close_btn.pack(side=tk.LEFT)
+            
+        elif frame == self.upload_frame:
+            # 上传照片区的左上角按钮容器
+            left_btn_frame = ttk.Frame(frame)
+            left_btn_frame.place(relx=0.0, rely=0.0, anchor='nw')
+            
+            # 编辑按钮
+            edit_btn = ttk.Button(
+                left_btn_frame,
+                text="✎",
+                width=3,
+                style='IconUpload.TButton',
+                command=lambda: self.edit_selected_photo(is_upload=True)
+            )
+            edit_btn.pack(side=tk.LEFT, padx=2)
+            
+            # 右上角按钮容器
+            right_btn_frame = ttk.Frame(frame)
+            right_btn_frame.place(relx=1.0, rely=0.0, anchor='ne')
             
             # 关闭按钮
             close_btn = ttk.Button(
@@ -566,31 +595,74 @@ class PreviewManager:
                         self.select_photo(i)
                         break
 
-    def edit_selected_photo(self):
+    def edit_selected_photo(self, is_upload=False):
         """编辑选中的照片"""
-        if not hasattr(self.app, 'processed_images'):
-            return
-            
+        if is_upload:
+            # 编辑上传区域的照片
+            if not hasattr(self.app, 'current_image'):
+                return
+            image = self.app.current_image
+            print("Editing uploaded image:", image)  # 调试输出
+        else:
+            # 编辑背景色区域的照片
+            if not hasattr(self.app, 'processed_images'):
+                return
+            image = self.app.processed_images[self.selected_label_index]
+            print("Editing processed image:", image)  # 调试输出
+        
         from dialogs.photo_editor import PhotoEditorDialog
         
-        # 获取选中的照片
-        image = self.app.processed_images[self.selected_label_index]
+        # 确保图像是numpy数组格式
+        if isinstance(image, Image.Image):
+            image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
         
         # 打开编辑器
         PhotoEditorDialog(
             self.app.window,
             image,
-            lambda edited_image: self.update_edited_photo(edited_image)
+            lambda edited_image: self.update_edited_photo(edited_image, is_upload)
         )
 
-    def update_edited_photo(self, edited_image):
+    def update_edited_photo(self, edited_image, is_upload=False):
         """更新编辑后的照片"""
-        if hasattr(self.app, 'processed_images'):
-            self.app.processed_images[self.selected_label_index] = edited_image
-            self.update_preview(
-                self.colored_labels[self.selected_label_index],
-                edited_image
-            )
+        if is_upload:
+            # 更新上传区域的照片
+            # 确保颜色空间是RGB
+            if isinstance(edited_image, np.ndarray):
+                edited_image = cv2.cvtColor(edited_image, cv2.COLOR_BGR2RGB)
+                edited_image = Image.fromarray(edited_image)
+            self.app.current_image = edited_image
+            self.update_preview(self.upload_label, edited_image)
+            
+            # 如果有透明图像，清除它以便重新抠图
+            if hasattr(self.app, 'transparent_image'):
+                delattr(self.app, 'transparent_image')
+            if hasattr(self.app, 'transparent_image_hd'):
+                delattr(self.app, 'transparent_image_hd')
+            if hasattr(self.app, 'processed_image'):
+                delattr(self.app, 'processed_image')
+            if hasattr(self.app, 'processed_images'):
+                delattr(self.app, 'processed_images')
+                
+            # 重置其他预览区域
+            self.transparent_label.configure(image='')
+            for label in self.colored_labels:
+                label.configure(image='')
+            
+            # 显示抠图按钮
+            self.setup_matting_button()
+            
+        else:
+            # 更新背景色区域的照片
+            if hasattr(self.app, 'processed_images'):
+                # 确保颜色空间是BGR
+                if isinstance(edited_image, Image.Image):
+                    edited_image = cv2.cvtColor(np.array(edited_image), cv2.COLOR_RGB2BGR)
+                self.app.processed_images[self.selected_label_index] = edited_image
+                self.update_preview(
+                    self.colored_labels[self.selected_label_index],
+                    edited_image
+                )
 
     def select_photo(self, index):
         """选择照片"""
