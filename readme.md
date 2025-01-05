@@ -1,5 +1,20 @@
 # 证件照制作系统
 
+软件基于开源的项目
+https://github.com/Zeyi-Lin/HivisionIDPhotos
+
+# 目录
+* [功能特点](#功能特点)
+* [安装说明](#安装说明)
+  * [环境要求](#环境要求)
+  * [安装步骤](#安装步骤)
+  * [打包说明](#打包说明)
+* [使用说明](#使用说明)
+  * [基本操作流程](#基本操作流程)
+  * [照片编辑](#照片编辑)
+  * [尺寸管理](#尺寸管理)
+  * [保存与导出](#保存与导出)
+
 ## 功能特点
 - 智能抠图：支持多种抠图模型，精准分离人像
 - 智能美颜：本地美颜和Face++美颜双引擎支持
@@ -7,15 +22,19 @@
 - 证照排版：提供多种预设排版样式，支持自定义排版
 - 一键制作：一键完成抠图、美颜、换底、排版全流程
 
-## 安装说明
+# 安装说明
 
-### 环境要求
+## 环境要求
 - Python 3.8+
 - pip包管理器
 - Windows 7/10/11
 
-### 安装步骤
+## 安装步骤
 1. 克隆或下载项目代码
+   ```bash
+   git clone https://github.com/bihaiy/IDphotos.git
+   cd IDphotos
+   ```
 2. 创建并激活虚拟环境（推荐）：
    ```bash
    python -m venv venv
@@ -25,12 +44,31 @@
    ```bash
    pip install -r requirements.txt
    ```
-4. 运行程序：
+4. 下载人像抠图模型权重文件：
+
+   模型文件需存放在 `hivision/creator/weights` 目录下：
+
+   | 人像抠图模型 | 介绍 | 下载链接 |
+   |------------|------|---------|
+   | MODNet | MODNet官方权重 | [下载](https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/modnet%5Fphotographic%5Fportrait%5Fmatting.onnx)(24.7MB) |
+   | hivision_modnet | 对纯色换底适配性更好的抠图模型 | [下载](https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/hivision%5Fmodnet.onnx)(24.7MB) |
+   | rmbg-1.4 | BRIA AI开源的抠图模型 | [下载](https://huggingface.co/briaai/RMBG-1.4/resolve/main/onnx/model.onnx?download=true)(176.2MB)后重命名为rmbg-1.4.onnx |
+   | birefnet-v1-lite | ZhengPeng7开源的抠图模型，拥有最好的分割精度 | [下载](https://github.com/ZhengPeng7/BiRefNet/releases/download/v1/BiRefNet-general-bb%5Fswin%5Fv1%5Ftiny-epoch%5F232.onnx)(224MB)后重命名为birefnet-v1-lite.onnx |
+
+5. 人脸检测模型配置（可选）：
+
+   | 人脸检测模型 | 介绍 | 使用说明 |
+   |------------|------|---------|
+   | MTCNN | **离线**人脸检测模型，高性能CPU推理（毫秒级），为默认模型，检测精度较低 | Clone此项目后直接使用 |
+   | RetinaFace | **离线**人脸检测模型，CPU推理速度中等（秒级），精度较高 | [下载](https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/retinaface-resnet50.onnx)后放到hivision/creator/retinaface/weights目录下 |
+   | Face++ | 旷视推出的在线人脸检测API，检测精度较高 | 需配置Face++ API密钥，详见[官方文档](https://console.faceplusplus.com.cn/documents/4888373) |
+
+6. 运行程序：
    ```bash
    python main.py
    ```
 
-### 打包说明
+## 打包说明
 1. 安装PyInstaller：
    ```bash
    pip install pyinstaller
@@ -41,13 +79,17 @@
    ```
 3. 打包完成后，可执行文件位于 `dist` 目录
 
-## 使用说明
+4. 或者直接下载打包好的文件：
+   - 链接: [百度网盘](https://pan.baidu.com/s/1fqAv4iHtHa8gmnjsFnK9AQ?pwd=svam) 提取码: svam
 
-### 基本操作流程
+# 使用说明
+
+## 基本操作流程
 1. 上传照片：
    - 点击左上角预览区的"上传"按钮
    - 支持jpg、png格式的图片
    - 可通过菜单栏"文件->打开"上传
+   - 点击左上角编辑图标可调整照片的亮度、对比度等参数
 
 2. 抠图处理：
    - 点击"抠图"按钮或使用菜单栏"编辑->抠图"
@@ -60,14 +102,17 @@
    - 支持纯色背景和渐变背景
    - 提供多种预设颜色和自定义颜色
    - 可调整渐变方向和强度
+   - 支持添加最多3张照片，每张照片可独立编辑
+   - 点击左上角"+"号添加照片，点击编辑图标调整照片参数
 
 4. 证照排版：
    - 点击"证照排版"按钮或使用菜单栏"编辑->证照排版"
    - 提供多种预设排版样式
    - 可自定义排版参数和照片尺寸
    - 支持显示参考线和分隔线
+   - 可使用换背景区域的1-3张照片进行混合排版
 
-### 照片编辑
+## 照片编辑
 1. 基础调整：
    - 亮度：-50 到 50
    - 对比度：-30 到 50
@@ -86,26 +131,19 @@
    - 支持多种美颜参数调节
    - 提供35种滤镜效果
 
-### 尺寸管理
+## 尺寸管理
 1. 通过菜单栏"工具->尺寸管理"打开管理窗口
 2. 支持添加、编辑、删除和排序
 3. 可管理纸张尺寸和证件照尺寸
 4. 所有尺寸数据保存在JSON配置文件中
 
-### 保存与导出
+## 保存与导出
 1. 支持保存多种格式：
    - 透明照片(PNG)
    - 换底照片(JPG)
    - 排版照片(JPG)
 2. 可通过菜单栏"文件"进行相应操作
 3. 支持一键制作完整流程
-
-### 快捷键
-- Ctrl+O：打开图片
-- Ctrl+S：保存当前照片
-- Ctrl+Z：撤销操作
-- Ctrl+Y：重做操作
-- Ctrl+P：打印排版
 
 ## 常见问题(FAQ)
 
