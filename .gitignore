@@ -9,3 +9,5 @@ venv/
 .DS_Store 
 hivision/creator/retinaface/weights/
 hivision/creator/weights/
+dist/
+build/
