@@ -1,5 +1,5 @@
 opencv-python>=4.8.1.78
-onnxruntime>=1.15.0
+onnxruntime>=1.20.1
 numpy<2.0.0
 Pillow>=8.0.0
 mtcnn-runtime>=0.1.0
