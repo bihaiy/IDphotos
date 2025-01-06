@@ -3,6 +3,11 @@
 软件基于开源的项目
 https://github.com/Zeyi-Lin/HivisionIDPhotos
 
+## 软件操作视频
+[![证件照制作系统操作视频](https://img.youtube.com/vi/NhPxdoP4R2o/0.jpg)](https://youtu.be/NhPxdoP4R2o)
+
+点击上方图片观看视频教程
+
 # 目录
 * [功能特点](#功能特点)
 * [安装说明](#安装说明)
