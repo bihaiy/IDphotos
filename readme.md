@@ -1,10 +1,12 @@
 # 证件照制作系统
 
 软件基于开源的项目
-https://github.com/Zeyi-Lin/HivisionIDPhotos
+<a href="https://github.com/Zeyi-Lin/HivisionIDPhotos" target="_blank">https://github.com/Zeyi-Lin/HivisionIDPhotos</a>
+
+**软件下载链接:** <a href="https://pan.baidu.com/s/1fqAv4iHtHa8gmnjsFnK9AQ?pwd=svam" target="_blank">百度网盘</a> 提取码: svam
 
 ## 软件操作视频
-[![证件照制作系统操作视频](https://img.youtube.com/vi/NhPxdoP4R2o/0.jpg)](https://youtu.be/NhPxdoP4R2o)
+[![证件照制作系统操作视频](https://img.youtube.com/vi/NhPxdoP4R2o/0.jpg)](https://youtu.be/NhPxdoP4R2o){target="_blank"}
 
 点击上方图片观看视频教程
 
@@ -55,18 +57,18 @@ https://github.com/Zeyi-Lin/HivisionIDPhotos
 
    | 人像抠图模型 | 介绍 | 下载链接 |
    |------------|------|---------|
-   | MODNet | MODNet官方权重 | [下载](https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/modnet%5Fphotographic%5Fportrait%5Fmatting.onnx)(24.7MB) |
-   | hivision_modnet | 对纯色换底适配性更好的抠图模型 | [下载](https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/hivision%5Fmodnet.onnx)(24.7MB) |
-   | rmbg-1.4 | BRIA AI开源的抠图模型 | [下载](https://huggingface.co/briaai/RMBG-1.4/resolve/main/onnx/model.onnx?download=true)(176.2MB)后重命名为rmbg-1.4.onnx |
-   | birefnet-v1-lite | ZhengPeng7开源的抠图模型，拥有最好的分割精度 | [下载](https://github.com/ZhengPeng7/BiRefNet/releases/download/v1/BiRefNet-general-bb%5Fswin%5Fv1%5Ftiny-epoch%5F232.onnx)(224MB)后重命名为birefnet-v1-lite.onnx |
+   | MODNet | MODNet官方权重 | <a href="https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/modnet%5Fphotographic%5Fportrait%5Fmatting.onnx" target="_blank">下载</a>(24.7MB) |
+   | hivision_modnet | 对纯色换底适配性更好的抠图模型 | <a href="https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/hivision%5Fmodnet.onnx" target="_blank">下载</a>(24.7MB) |
+   | rmbg-1.4 | BRIA AI开源的抠图模型 | <a href="https://huggingface.co/briaai/RMBG-1.4/resolve/main/onnx/model.onnx?download=true" target="_blank">下载</a>(176.2MB)后重命名为rmbg-1.4.onnx |
+   | birefnet-v1-lite | ZhengPeng7开源的抠图模型，拥有最好的分割精度 | <a href="https://github.com/ZhengPeng7/BiRefNet/releases/download/v1/BiRefNet-general-bb%5Fswin%5Fv1%5Ftiny-epoch%5F232.onnx" target="_blank">下载</a>(224MB)后重命名为birefnet-v1-lite.onnx |
 
 5. 人脸检测模型配置（可选）：
 
    | 人脸检测模型 | 介绍 | 使用说明 |
    |------------|------|---------|
    | MTCNN | **离线**人脸检测模型，高性能CPU推理（毫秒级），为默认模型，检测精度较低 | Clone此项目后直接使用 |
-   | RetinaFace | **离线**人脸检测模型，CPU推理速度中等（秒级），精度较高 | [下载](https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/retinaface-resnet50.onnx)后放到hivision/creator/retinaface/weights目录下 |
-   | Face++ | 旷视推出的在线人脸检测API，检测精度较高 | 需配置Face++ API密钥，详见[官方文档](https://console.faceplusplus.com.cn/documents/4888373) |
+   | RetinaFace | **离线**人脸检测模型，CPU推理速度中等（秒级），精度较高 | <a href="https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/retinaface-resnet50.onnx" target="_blank">下载</a>后放到hivision/creator/retinaface/weights目录下 |
+   | Face++ | 旷视推出的在线人脸检测API，检测精度较高 | 需配置Face++ API密钥，详见<a href="https://console.faceplusplus.com.cn/documents/4888373" target="_blank">官方文档</a> |
 
 6. 运行程序：
    ```bash
@@ -85,7 +87,7 @@ https://github.com/Zeyi-Lin/HivisionIDPhotos
 3. 打包完成后，可执行文件位于 `dist` 目录
 
 4. 或者直接下载打包好的文件：
-   - 链接: [百度网盘](https://pan.baidu.com/s/1fqAv4iHtHa8gmnjsFnK9AQ?pwd=svam) 提取码: svam
+   - 链接: <a href="https://pan.baidu.com/s/1fqAv4iHtHa8gmnjsFnK9AQ?pwd=svam" target="_blank">百度网盘</a> 提取码: svam
 
 # 使用说明
 
