@@ -64,6 +64,11 @@ a = Analysis(
         'hivision.plugin.beauty',
         'config',  # 添加config模块
         'config.default_sizes',  # 添加default_sizes模块
+        'win32print',  # 添加打印相关模块
+        'win32ui',
+        'win32gui',
+        'win32con',
+        'win32api',
     ],
     hookspath=[],
     hooksconfig={

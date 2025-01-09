@@ -9,6 +9,8 @@ from ui.menu import MenuManager
 from processors.image_processor import ImageProcessor
 from utils.style import setup_styles
 from config.default_sizes import init_config_files
+from dialogs.print_dialog import PrintDialog
+from tkinter import messagebox
 
 
 class IDPhotoProcessor:
@@ -34,10 +36,14 @@ class IDPhotoProcessor:
             self.params_notebook = ttk.Notebook(self.right_frame)
             self.params_notebook.pack(fill=tk.BOTH, expand=True)
             
-            # 修改初始化顺序
-            self.params_manager = ParamsManager(self)  # 先创建参数管理器
-            self.image_processor = ImageProcessor(self)  # 再创建图像处理器
-            self.preview_manager = PreviewManager(self)  # 最后创建预览管理器
+            # 创建参数管理器（确保在创建其他组件之后）
+            self.params_manager = ParamsManager(self)
+            
+            # 创建图像处理器
+            self.image_processor = ImageProcessor(self)
+            
+            # 创建预览管理器
+            self.preview_manager = PreviewManager(self)
             self.menu_manager = MenuManager(self)
             
             # 创建底部按钮区域
@@ -82,7 +88,7 @@ class IDPhotoProcessor:
             ttk.Button(
                 bottom_frame,
                 text="打印证件照",
-                command=lambda: self.image_processor.print_photo(),
+                command=lambda: PrintDialog(self.window, self.layout_image) if hasattr(self, 'layout_image') else messagebox.showwarning("提示", "请先生成排版照片"),
                 style='Primary.TButton'
             ).pack(fill=tk.X, pady=(0, 5))
             
@@ -95,14 +101,17 @@ class IDPhotoProcessor:
     def setup_window(self):
         """设置窗口基本属性"""
         self.window.title("证件照制作系统")
-        self.window.geometry("1280x800")
-        self.window.minsize(1024, 768)
+        # self.window.geometry("1280x800")  # 移除固定尺寸设置
+        self.window.minsize(1024, 768)     # 保持最小尺寸限制
         self.window.configure(bg='#f0f2f5')
         
         # 设置样式
         setup_styles()
         
-        # 使窗口居中显示
+        # 窗口最大化
+        self.window.state('zoomed')  # Windows系统使用 'zoomed'
+        
+        # 使窗口居中显示（仅在非最大化时生效）
         self.center_window()
         
     def center_window(self):

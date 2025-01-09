@@ -278,3 +278,24 @@ class LayoutParams:
         
         # 触发选择事件以更新显示
         self.on_style_select(None)
+        
+    def setup_buttons(self):
+        """设置按钮"""
+        button_frame = ttk.Frame(self)
+        button_frame.pack(fill=tk.X, padx=5, pady=5)
+        
+        # 排版按钮
+        ttk.Button(
+            button_frame,
+            text="证照排版",
+            command=self.app.image_processor.process_layout
+        ).pack(side=tk.LEFT, padx=5)
+        
+        # 管理尺寸按钮
+        ttk.Button(
+            button_frame,
+            text="尺寸管理",
+            command=self.app.params_manager.manage_sizes
+        ).pack(side=tk.LEFT, padx=5)
+        
+        # 不在这里创建打印按钮，而是使用ParamsManager中的打印按钮
