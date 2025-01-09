@@ -6,7 +6,7 @@
 **软件下载链接:** <a href="https://pan.baidu.com/s/1fqAv4iHtHa8gmnjsFnK9AQ?pwd=svam" target="_blank">百度网盘</a> 提取码: svam
 
 ## 软件操作视频
-[![证件照制作系统操作视频](https://img.youtube.com/vi/NhPxdoP4R2o/0.jpg)](https://youtu.be/NhPxdoP4R2o){target="_blank"}
+[![证件照制作系统操作视频](https://img.youtube.com/vi/NhPxdoP4R2o/0.jpg)](https://youtu.be/NhPxdoP4R2o)
 
 点击上方图片观看视频教程
 
