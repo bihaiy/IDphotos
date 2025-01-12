@@ -3,6 +3,25 @@ import numpy as np
 
 class LayoutPreviewGenerator:
     @staticmethod
+    def crop_to_size(image, target_width, target_height):
+        """裁剪图片以适应目标尺寸"""
+        img_height, img_width = image.shape[:2]
+        target_ratio = target_width / target_height
+        img_ratio = img_width / img_height
+        
+        if abs(img_ratio - target_ratio) < 0.01:  # 如果比例相差很小，直接返回
+            return image
+            
+        if img_ratio > target_ratio:  # 图片太宽，需要裁剪宽度
+            new_width = int(img_height * target_ratio)
+            start_x = (img_width - new_width) // 2
+            return image[:, start_x:start_x + new_width]
+        else:  # 图片太高，需要裁剪高度
+            new_height = int(img_width / target_ratio)
+            start_y = (img_height - new_height) // 2
+            return image[start_y:start_y + new_height, :]
+
+    @staticmethod
     def generate_preview(paper_size, orientation, margins, photos, spacing, 
                         show_gridlines, show_divider, dpi=300, images=False):
         """生成排版预览"""
@@ -23,6 +42,8 @@ class LayoutPreviewGenerator:
         DIVIDER_COLOR = (180, 180, 180)
         GRID_THICKNESS = 2
         DIVIDER_THICKNESS = 1
+        PHOTO_BORDER_COLOR = (100, 100, 100)  # 照片边框颜色
+        PHOTO_BORDER_THICKNESS = 1  # 照片边框粗细
         
         # 计算可用区域
         available_width = paper_pixels[0] - margins_pixels['left'] - margins_pixels['right']
@@ -81,16 +102,36 @@ class LayoutPreviewGenerator:
             if images and 'image' in photo_data:
                 # 绘制实际照片
                 image = photo_data['image']
-                # 调整照片方向
+                # 根据布局类型确定目标尺寸
+                target_width = photo_data['width']
+                target_height = photo_data['height']
+                
+                # 调整照片方向并裁剪
                 if photo_data['layout_type'] == 'vertical':
+                    # 对于垂直布局，先旋转后裁剪
                     image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
-                # 缩放照片
-                scaled_image = cv2.resize(image, (photo_data['width'], photo_data['height']))
+                    image = LayoutPreviewGenerator.crop_to_size(image, target_width, target_height)
+                else:
+                    # 对于水平布局，直接裁剪
+                    image = LayoutPreviewGenerator.crop_to_size(image, target_width, target_height)
+                
+                # 缩放照片到目标尺寸
+                scaled_image = cv2.resize(image, (target_width, target_height))
                 # 放置照片
                 canvas[
-                    current_y:current_y+photo_data['height'],
-                    current_x:current_x+photo_data['width']
+                    current_y:current_y+target_height,
+                    current_x:current_x+target_width
                 ] = scaled_image
+                
+                # 绘制照片边框（仅在显示参考线时）
+                if show_gridlines:
+                    cv2.rectangle(
+                        canvas,
+                        (current_x, current_y),
+                        (current_x + target_width - 1, current_y + target_height - 1),
+                        PHOTO_BORDER_COLOR,
+                        PHOTO_BORDER_THICKNESS
+                    )
             else:
                 # 绘制占位区域
                 cv2.rectangle(
@@ -100,6 +141,16 @@ class LayoutPreviewGenerator:
                     (240, 240, 240),
                     -1
                 )
+                
+                # 绘制占位区域边框（仅在显示参考线时）
+                if show_gridlines:
+                    cv2.rectangle(
+                        canvas,
+                        (current_x, current_y),
+                        (current_x + photo_data['width'] - 1, current_y + photo_data['height'] - 1),
+                        PHOTO_BORDER_COLOR,
+                        PHOTO_BORDER_THICKNESS
+                    )
                 
                 # 显示尺寸文本
                 text = photo_data['size_text']

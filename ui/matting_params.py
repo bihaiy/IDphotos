@@ -22,10 +22,23 @@ class MattingParams:
         
         self.setup_matting_params(parent_notebook)
         
+    def update_matting(self):
+        """更新抠图效果"""
+        if hasattr(self.app, 'transparent_image'):
+            self.app.image_processor.process_matting()
+            
     def setup_matting_params(self, parent_notebook):
         """设置抠图参数标签页"""
-        matting_frame = ttk.Frame(parent_notebook, padding=5)
+        matting_frame = ttk.Frame(parent_notebook, padding=10)
         parent_notebook.add(matting_frame, text="抠图参数")
+        
+        # 高清照片选项（使用app中的变量）
+        ttk.Checkbutton(
+            matting_frame,
+            text="高清照片",
+            variable=self.app.hd_var,  # 使用app中的变量
+            command=self.update_matting
+        ).pack(anchor=tk.W)
         
         # 抠图模型选择
         model_frame = ttk.LabelFrame(matting_frame, text="抠图模型", padding=2)
@@ -70,7 +83,7 @@ class MattingParams:
         photo_size_list = list(self.photo_sizes.keys())
         
         # 抠图尺寸下拉框
-        self.matting_size_var = tk.StringVar(value="一寸 (25×35mm)")
+        self.matting_size_var = tk.StringVar(value="五寸（127x89mm）")
         self.matting_size_combobox = ttk.Combobox(
             size_frame,
             textvariable=self.matting_size_var,

@@ -155,6 +155,11 @@ class ImageProcessor:
                 if not hasattr(self.app, 'current_image'):  # 如果用户取消上传
                     return
             
+            # 获取选择的尺寸名称
+            size_name = self.app.params_manager.matting_params.matting_size_var.get()
+            if not size_name:
+                size_name = "五寸 (127×89mm)"  # 默认使用五寸
+            
             # 切换到抠图参数标签页
             self.app.params_notebook.select(0)
             

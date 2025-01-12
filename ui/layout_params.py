@@ -200,9 +200,6 @@ class LayoutParams:
             style['show_gridlines'] = self.show_gridlines_var.get()
             style['show_divider'] = self.show_divider_var.get()
             
-            # 切换到排版参数标签页
-            self.app.params_notebook.select(2)
-            
             # 执行排版
             self.app.image_processor.process_layout()
         
@@ -299,3 +296,8 @@ class LayoutParams:
         ).pack(side=tk.LEFT, padx=5)
         
         # 不在这里创建打印按钮，而是使用ParamsManager中的打印按钮
+        
+    def update_photos(self):
+        """更新照片后刷新排版"""
+        if hasattr(self.app, 'layout_image'):
+            self.update_layout()

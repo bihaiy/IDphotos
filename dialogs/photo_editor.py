@@ -570,10 +570,12 @@ class PhotoEditorDialog:
         self.toggle_panel(self.rotate_frame)
 
     def cancel_rotate(self):
-        """取���旋转"""
+        """取消旋转"""
         if hasattr(self, 'temp_image'):
-            self.current_image = self.temp_image.copy()  # 恢复到临时保存的图像
+            # 恢复到开始旋转前的状态
+            self.current_image = self.temp_image.copy()
             delattr(self, 'temp_image')
+            
         self.angle_var.set(0)  # 重置角度
         # 重置翻转状态
         self.horizontal_flipped = False
@@ -587,15 +589,15 @@ class PhotoEditorDialog:
         """90度旋转
         direction: 1表示顺时针，-1表示逆时针
         """
-        # 保存临时图像（如果还没有）
+        # 第一次旋转时保存原始状态
         if not hasattr(self, 'temp_image'):
             self.temp_image = self.original_image.copy()
             
-        # 执行旋转（基于原始图像）
+        # 基于当前图像进行旋转
         if direction == 1:
-            self.current_image = cv2.rotate(self.temp_image, cv2.ROTATE_90_CLOCKWISE)
+            self.current_image = cv2.rotate(self.current_image, cv2.ROTATE_90_CLOCKWISE)
         else:
-            self.current_image = cv2.rotate(self.temp_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            self.current_image = cv2.rotate(self.current_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
             
         self.update_preview()
 
@@ -748,7 +750,7 @@ class PhotoEditorDialog:
         if not self.size_map:
             return
             
-        # 获取当���选择的尺寸
+        # 获取当前选择的尺寸
         size_name = self.size_var.get()
         if size_name == "自定义":
             size_name = list(self.size_map.keys())[0]  # 使用第一个预设尺寸
@@ -1408,7 +1410,7 @@ class PhotoEditorDialog:
                         self.preview_canvas.configure(cursor='sb_h_double_arrow')
                         return
         
-        # 如果没��点击到参考线，处理其他操作
+        # 如果没点击到参考线，处理其他操作
         self.start_crop(event)
 
     def on_mouse_drag(self, event):
@@ -1473,3 +1475,48 @@ class PhotoEditorDialog:
         """鼠标离开参考线"""
         if not self.dragging_line:
             self.preview_canvas.configure(cursor='')
+
+    def rotate_left(self):
+        """向左旋转90度"""
+        if isinstance(self.current_image, np.ndarray):
+            # OpenCV的旋转是顺时针的，所以用ROTATE_90_COUNTERCLOCKWISE
+            self.current_image = cv2.rotate(self.current_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        elif isinstance(self.current_image, Image.Image):
+            self.current_image = self.current_image.rotate(90, expand=True)
+            
+        # 更新预览
+        self.update_preview()
+        
+    def rotate_right(self):
+        """向右旋转90度"""
+        if isinstance(self.current_image, np.ndarray):
+            # OpenCV的旋转是顺时针的，所以用ROTATE_90_CLOCKWISE
+            self.current_image = cv2.rotate(self.current_image, cv2.ROTATE_90_CLOCKWISE)
+        elif isinstance(self.current_image, Image.Image):
+            self.current_image = self.current_image.rotate(-90, expand=True)
+            
+        # 更新预览
+        self.update_preview()
+        
+    def setup_buttons(self):
+        """设置按钮"""
+        button_frame = ttk.Frame(self.dialog)
+        button_frame.pack(fill=tk.X, pady=10)
+        
+        # 旋转按钮
+        rotate_frame = ttk.Frame(button_frame)
+        rotate_frame.pack(side=tk.LEFT, padx=5)
+        
+        ttk.Button(
+            rotate_frame,
+            text="左转",
+            command=self.rotate_left,
+            width=6
+        ).pack(side=tk.LEFT, padx=2)
+        
+        ttk.Button(
+            rotate_frame,
+            text="右转",
+            command=self.rotate_right,
+            width=6
+        ).pack(side=tk.LEFT, padx=2)

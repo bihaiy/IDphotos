@@ -65,7 +65,10 @@ class IDPhotoProcessor:
             ttk.Button(
                 button_row,
                 text="换背景",
-                command=lambda: self.image_processor.process_background(),
+                command=lambda: (
+                    self.image_processor.process_background(),
+                    self.params_manager.layout_params.update_photos()
+                ),
                 style='Primary.TButton'
             ).pack(side=tk.LEFT, expand=True, padx=2)
             
@@ -101,8 +104,7 @@ class IDPhotoProcessor:
     def setup_window(self):
         """设置窗口基本属性"""
         self.window.title("证件照制作系统")
-        # self.window.geometry("1280x800")  # 移除固定尺寸设置
-        self.window.minsize(1024, 768)     # 保持最小尺寸限制
+        self.window.minsize(1280, 800)     # 保持最小尺寸限制
         self.window.configure(bg='#f0f2f5')
         
         # 设置样式
@@ -135,7 +137,7 @@ class IDPhotoProcessor:
         self.window.geometry(f"+{x}+{y}")
         
     def setup_variables(self):
-        """初始化变量"""
+        """设置变量"""
         # 抠图参数
         self.ratio_value = tk.StringVar(value="0.20")  # 面部比例，保留2位小数
         self.top_value = tk.StringVar(value="0.12")    # 头至顶距离，保留2位小数
@@ -148,7 +150,7 @@ class IDPhotoProcessor:
         
         # 其他参数
         self.align_var = tk.BooleanVar(value=False)  # 人脸矫正
-        self.hd_var = tk.BooleanVar(value=False)     # 高清输出
+        self.hd_var = tk.BooleanVar(value=True)     # 高清输出默认为True
         self.show_gridlines_var = tk.BooleanVar(value=True)  # 显示参考线
         
     def run(self):

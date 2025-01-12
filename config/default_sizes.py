@@ -128,6 +128,37 @@ def init_config_files():
             "spacing": 1.0,
             "show_gridlines": False,
             "show_divider": True
+        },
+        "5寸1张_4R": {
+            "name": "5寸1张_4R",
+            "paper_size": "4R（102x152mm）",
+            "orientation": "portrait",
+            "margins": {
+                "top": 5.0,
+                "bottom": 5.0,
+                "left": 5.0,
+                "right": 5.0
+            },
+            "photos": [
+                {
+                    "photo_size": "五寸（127x89mm）",
+                    "layout_type": "horizontal",
+                    "count": 1
+                },
+                {
+                    "photo_size": "一寸 (25×35mm)",
+                    "layout_type": "horizontal",
+                    "count": 0
+                },
+                {
+                    "photo_size": "一寸 (25×35mm)",
+                    "layout_type": "horizontal",
+                    "count": 0
+                }
+            ],
+            "spacing": 2.0,
+            "show_gridlines": False,
+            "show_divider": True
         }
     }
 
