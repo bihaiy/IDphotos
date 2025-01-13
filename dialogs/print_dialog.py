@@ -55,6 +55,7 @@ class PrintDialog:
         self.printer_var = tk.StringVar()
         self.paper_var = tk.StringVar()
         self.copies_var = tk.StringVar(value="1")
+        self.scale_var = tk.StringVar(value="100")  # 添加缩放变量，默认100%
         
         # 根据图像方向设置打印方向
         if isinstance(self.image, np.ndarray):
@@ -210,6 +211,15 @@ class PrintDialog:
                        variable=self.orientation_var, command=self.update_preview).pack(side=tk.LEFT, padx=(5, 10))
         ttk.Radiobutton(orientation_frame, text="横向", value="landscape", 
                        variable=self.orientation_var, command=self.update_preview).pack(side=tk.LEFT)
+        
+        # 缩放设置
+        scale_frame = ttk.Frame(parent)
+        scale_frame.pack(fill=tk.X, pady=(0, 10))
+        ttk.Label(scale_frame, text="缩放:").pack(side=tk.LEFT)
+        scale_spinbox = ttk.Spinbox(scale_frame, from_=10, to=200, width=5,
+                                  textvariable=self.scale_var, command=self.update_preview)
+        scale_spinbox.pack(side=tk.LEFT, padx=(5, 5))
+        ttk.Label(scale_frame, text="%").pack(side=tk.LEFT)
         
         # 按钮区域
         btn_frame = ttk.Frame(parent)
@@ -431,7 +441,7 @@ class PrintDialog:
             if preview_width <= 0 or preview_height <= 0:
                 return
             
-            # 获取当前纸张尺寸
+            # 获取当前纸张尺寸（毫米）
             printer_name = self.printer_var.get()
             paper_name = self.paper_var.get()
             paper_width, paper_height = self.get_paper_dimensions(printer_name, paper_name)
@@ -450,17 +460,25 @@ class PrintDialog:
             else:
                 return
                 
-            # 获取原始图像尺寸
-            img_width, img_height = pil_image.size
-            is_landscape = img_width > img_height
+            # 获取原始图像尺寸（像素）
+            img_width_px, img_height_px = pil_image.size
             
-            # 根据方向和图像方向决定是否需要旋转
-            if (is_landscape and self.orientation_var.get() == "portrait") or \
-               (not is_landscape and self.orientation_var.get() == "landscape"):
-                pil_image = pil_image.rotate(90, expand=True)
-                img_width, img_height = pil_image.size
+            # 获取图像的DPI信息（如果没有，使用默认值300dpi）
+            try:
+                dpi_x, dpi_y = pil_image.info.get('dpi', (300, 300))
+            except:
+                dpi_x, dpi_y = 300, 300
             
-            # 计算预览区域的缩放比例
+            # 将图像尺寸转换为毫米
+            img_width_mm = img_width_px * 25.4 / dpi_x
+            img_height_mm = img_height_px * 25.4 / dpi_y
+            
+            # 应用缩放比例
+            scale_factor = float(self.scale_var.get()) / 100.0
+            img_width_mm *= scale_factor
+            img_height_mm *= scale_factor
+            
+            # 计算预览区域的缩放比例（基于纸张尺寸）
             margin = 10  # 预留边距
             scale_x = (preview_width - 2 * margin) / paper_width
             scale_y = (preview_height - 2 * margin) / paper_height
@@ -470,20 +488,19 @@ class PrintDialog:
             paper_pixel_width = int(paper_width * scale)
             paper_pixel_height = int(paper_height * scale)
             
-            # 调整图像大小以适应纸张
-            ratio = min(paper_pixel_width/img_width, paper_pixel_height/img_height)
-            new_width = int(img_width * ratio)
-            new_height = int(img_height * ratio)
+            # 计算图像在预览中的尺寸（保持实际物理尺寸比例）
+            preview_width_px = int(img_width_mm * scale)
+            preview_height_px = int(img_height_mm * scale)
             
             # 调整图像大小
-            resized_image = pil_image.resize((new_width, new_height), Image.LANCZOS)
+            resized_image = pil_image.resize((preview_width_px, preview_height_px), Image.LANCZOS)
             
             # 创建一个白色背景的新图像，大小为纸张尺寸
             preview_image = Image.new('RGB', (paper_pixel_width, paper_pixel_height), 'white')
             
             # 将调整后的图像粘贴到中心位置
-            x = (paper_pixel_width - new_width) // 2
-            y = (paper_pixel_height - new_height) // 2
+            x = (paper_pixel_width - preview_width_px) // 2
+            y = (paper_pixel_height - preview_height_px) // 2
             preview_image.paste(resized_image, (x, y))
             
             # 更新预览图像
@@ -692,14 +709,8 @@ class PrintDialog:
                     elif isinstance(self.image, Image.Image):
                         pil_image = self.image
                     
-                    # 获取原始图像尺寸并确定方向
+                    # 获取原始图像尺寸
                     img_width, img_height = pil_image.size
-                    is_landscape = img_width > img_height
-                    
-                    # 根据方向和图像方向决定是否需要旋转
-                    if (is_landscape and self.orientation_var.get() == "portrait") or \
-                       (not is_landscape and self.orientation_var.get() == "landscape"):
-                        pil_image = pil_image.rotate(90, expand=True)
                     
                     # 将图像转换为PDF
                     try:
@@ -774,14 +785,8 @@ class PrintDialog:
                 elif isinstance(self.image, Image.Image):
                     pil_image = self.image
                 
-                # 获取原始图像尺寸并确定方向
+                # 获取原始图像尺寸
                 img_width, img_height = pil_image.size
-                is_landscape = img_width > img_height
-                
-                # 根据方向和图像方向决定是否需要旋转
-                if (is_landscape and self.orientation_var.get() == "portrait") or \
-                   (not is_landscape and self.orientation_var.get() == "landscape"):
-                    pil_image = pil_image.rotate(90, expand=True)
                 
                 # 获取打印机DC
                 hprinter = win32print.OpenPrinter(printer_name)
@@ -858,36 +863,45 @@ class PrintDialog:
                                 paper_width = dc.GetDeviceCaps(win32con.PHYSICALWIDTH) * 25.4 / dpi_x
                                 paper_height = dc.GetDeviceCaps(win32con.PHYSICALHEIGHT) * 25.4 / dpi_y
                             
-                            # 转换纸张尺寸为像素
-                            width_pixels = int(paper_width * dpi_x / 25.4)
-                            height_pixels = int(paper_height * dpi_y / 25.4)
+                            # 获取图像的原始物理尺寸（毫米）
+                            try:
+                                img_dpi_x, img_dpi_y = pil_image.info.get('dpi', (300, 300))
+                            except:
+                                img_dpi_x, img_dpi_y = 300, 300
+                                
+                            img_width_mm = pil_image.size[0] * 25.4 / img_dpi_x
+                            img_height_mm = pil_image.size[1] * 25.4 / img_dpi_y
+                            
+                            # 应用缩放比例
+                            scale_factor = float(self.scale_var.get()) / 100.0
+                            img_width_mm *= scale_factor
+                            img_height_mm *= scale_factor
+                            
+                            # 将图像物理尺寸转换为打印机设备像素
+                            img_width_pixels = int(img_width_mm * dpi_x / 25.4)
+                            img_height_pixels = int(img_height_mm * dpi_y / 25.4)
                             
                             # 获取实际可打印区域
                             printable_width = dc.GetDeviceCaps(win32con.HORZRES)
                             printable_height = dc.GetDeviceCaps(win32con.VERTRES)
                             
-                            # 计算边距
-                            margin_x = (width_pixels - printable_width) // 2
-                            margin_y = (height_pixels - printable_height) // 2
+                            # 计算居中位置
+                            x = (printable_width - img_width_pixels) // 2
+                            y = (printable_height - img_height_pixels) // 2
                             
-                            # 调整图像大小以适应纸张（不考虑边距）
-                            img_width, img_height = pil_image.size
-                            ratio = min(width_pixels/img_width, height_pixels/img_height)
-                            new_width = int(img_width * ratio)
-                            new_height = int(img_height * ratio)
+                            # 创建内存DC
+                            mem_dc = dc.CreateCompatibleDC()
                             
-                            # 计算居中位置（忽略打印机边距）
-                            x = (width_pixels - new_width) // 2
-                            y = (height_pixels - new_height) // 2
-                            
-                            # 调整图像大小
-                            resized_image = pil_image.resize((new_width, new_height), Image.LANCZOS)
-                            
-                            # 将PIL图像转换为Windows位图
-                            dib = ImageWin.Dib(resized_image)
-                            
-                            # 在打印机DC上绘制图像（使用物理坐标）
-                            dib.draw(dc.GetHandleOutput(), (x, y, x + new_width, y + new_height))
+                            try:
+                                # 将PIL图像转换为Windows位图
+                                dib = ImageWin.Dib(pil_image)
+                                
+                                # 在打印机DC上绘制图像
+                                dib.draw(dc.GetHandleOutput(), (x, y, x + img_width_pixels, y + img_height_pixels))
+                                
+                            finally:
+                                # 清理资源
+                                mem_dc.DeleteDC()
                             
                             # 结束页面
                             dc.EndPage()
@@ -895,20 +909,23 @@ class PrintDialog:
                         except Exception as e:
                             print(f"打印页面失败: {str(e)}")
                             continue
-                            
+                    
                     # 结束文档
                     dc.EndDoc()
+                    
+                except Exception as e:
+                    print(f"打印失败: {str(e)}")
                     
                 finally:
                     # 清理资源
                     dc.DeleteDC()
                     win32print.ClosePrinter(hprinter)
-            
+                    
             # 关闭对话框
             self.dialog.destroy()
             
         except Exception as e:
-            messagebox.showerror("错误", f"打印失败：{str(e)}")
+            messagebox.showerror("错误", f"打印失败: {str(e)}")
             
     def center_window(self):
         """使窗口居中显示"""
